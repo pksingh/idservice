@@ -20,7 +20,7 @@ This can be used in various ways; which provides unique id for each request.
     - Lets run/execute the binary to bring the service up.
     > `idservice.exe` or `idservice` if you use *NIX os
     ```
-    C:\Users\Home\Desktop\idservice>idserver.exe
+    C:\Users\Home\Desktop\idservice>idservice.exe
     Server Starting on 8080
     ```
 

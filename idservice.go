@@ -12,7 +12,6 @@ func main() {
 	flag.Parse()
 
 	http.HandleFunc("/hello", hello)
-
 	// fmt.Println("Server Starting on 8080")
 	log.Println(fmt.Sprintf("idservice Running on port %v ...", *port))
 
@@ -24,3 +23,4 @@ func main() {
 func hello(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "idservice > hi!")
 }
+
