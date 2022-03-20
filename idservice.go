@@ -1,15 +1,30 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"log"
 	"net/http"
 )
 
+const (
+	StatusOK     = "ok"
+	StatusFAILED = "failed"
+
+	StatusInit    = "node initiated"
+	StatusNotInit = "node not initiated"
+)
+
+var status string
+var err error
+
 func main() {
 	port := flag.Int("p", 80, "Port")
 	flag.Parse()
+
+	err = errors.New(StatusNotInit)
+	status = StatusNotInit
 
 	http.HandleFunc("/hello", hello)
 	http.HandleFunc("/health", health)
@@ -28,5 +43,10 @@ func hello(w http.ResponseWriter, r *http.Request) {
 }
 
 func health(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "{\"status\": \"ok\"}")
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "{\"status\": \"%s\"}", status)
+	} else {
+		fmt.Fprintf(w, "{\"status\": \"ok\"}")
+	}
 }
