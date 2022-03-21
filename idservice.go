@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 )
 
@@ -28,7 +29,7 @@ func main() {
 
 	http.HandleFunc("/hello", hello)
 	http.HandleFunc("/health", health)
-	http.HandleFunc("/", health)
+	http.HandleFunc("/idgen", idgen)
 
 	// fmt.Println("Server Starting on 8080")
 	log.Println(fmt.Sprintf("idservice Running on port %v ...", *port))
@@ -46,7 +47,17 @@ func health(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintf(w, "{\"status\": \"%s\"}", status)
+		// fmt.Fprintf(w, "{\"status\": \"%s\", \"error\": \"%v\"}", status, err.Error())
 	} else {
 		fmt.Fprintf(w, "{\"status\": \"ok\"}")
 	}
+}
+
+func idgen(w http.ResponseWriter, r *http.Request) {
+
+	uid := rand.Int()
+
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprintf(w, "{\"uid\": \"%v\"}", uid)
+
 }
