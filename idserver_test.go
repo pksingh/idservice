@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetHealthHttpt(t *testing.T) {
@@ -33,3 +34,30 @@ func TestGetHealthHttpt(t *testing.T) {
 	}
 
 }
+
+func TestGetHealth(t *testing.T) {
+	req := httptest.NewRequest(http.MethodGet, "/health", nil)
+	w := httptest.NewRecorder()
+	GetHealth(w, req)
+
+	assert.NotEmpty(t, w)
+	assert.NotEmpty(t, w.Body)
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, "{\"status\": \"ok\"}", w.Body.String())
+
+}
+
+func TestGetIdgen(t *testing.T) {
+	req := httptest.NewRequest(http.MethodGet, "/idgen", nil)
+	w := httptest.NewRecorder()
+	GetIdgen(w, req)
+
+	assert.NotEmpty(t, w)
+	assert.NotEmpty(t, w.Body)
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Contains(t, w.Body.String(), "uid")
+	var result map[string]interface{}
+	json.Unmarshal(w.Body.Bytes(), &result)
+	assert.NotEmpty(t, result["uid"])
+}
+
