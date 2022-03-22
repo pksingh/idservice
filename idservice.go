@@ -28,8 +28,8 @@ func main() {
 	status = StatusNotInit
 
 	http.HandleFunc("/hello", hello)
-	http.HandleFunc("/health", health)
-	http.HandleFunc("/idgen", idgen)
+	http.HandleFunc("/health", GetHealth)
+	http.HandleFunc("/idgen", GetIdgen)
 
 	// fmt.Println("Server Starting on 8080")
 	log.Println(fmt.Sprintf("idservice Running on port %v ...", *port))
@@ -43,7 +43,7 @@ func hello(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "idservice > hi!")
 }
 
-func health(w http.ResponseWriter, r *http.Request) {
+func GetHealth(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintf(w, "{\"status\": \"%s\"}", status)
@@ -53,7 +53,7 @@ func health(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func idgen(w http.ResponseWriter, r *http.Request) {
+func GetIdgen(w http.ResponseWriter, r *http.Request) {
 
 	uid := rand.Int()
 
