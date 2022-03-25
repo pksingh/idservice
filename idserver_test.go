@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -59,5 +60,35 @@ func TestGetIdgen(t *testing.T) {
 	var result map[string]interface{}
 	json.Unmarshal(w.Body.Bytes(), &result)
 	assert.NotEmpty(t, result["uid"])
+}
+
+func TestGetIdmeta(t *testing.T) {
+	nId = 0
+	nTimeBits = 42
+	nNodeBits = 5
+	nCountBits = 16
+	nStartTime = time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+
+	req := httptest.NewRequest(http.MethodGet, "/idmeta", nil)
+	w := httptest.NewRecorder()
+	GetIdmeta(w, req)
+
+	assert.NotEmpty(t, w)
+	assert.NotEmpty(t, w.Body)
+	assert.Equal(t, http.StatusOK, w.Code)
+	strBody := w.Body.String()
+	assert.Contains(t, strBody, "start_time")
+	assert.Contains(t, strBody, "node_id")
+	assert.Contains(t, strBody, "time_bits")
+	assert.Contains(t, strBody, "node_bits")
+	assert.Contains(t, strBody, "count_bits")
+
+	var result map[string]interface{}
+	json.Unmarshal(w.Body.Bytes(), &result)
+	assert.NotEmpty(t, result["start_time"])
+	assert.NotNil(t, result["node_id"])
+	assert.NotEmpty(t, result["time_bits"])
+	assert.NotEmpty(t, result["node_bits"])
+	assert.NotEmpty(t, result["count_bits"])
 }
 
