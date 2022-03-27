@@ -5,9 +5,10 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"math/rand"
 	"net/http"
 	"time"
+
+	snowid "idservice/snowid"
 )
 
 const (
@@ -73,7 +74,7 @@ func GetIdgen(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprintf(w, "{\"error\": \"%s\"}", status)
 	} else {
-		uid := rand.Int()
+		uid := snowid.NextId()
 
 		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprintf(w, "{\"uid\": \"%v\"}", uid)
