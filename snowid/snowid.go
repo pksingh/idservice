@@ -3,7 +3,7 @@ package snowid
 // Package snowid provides a distributed snowflake unique id generator
 
 import (
-	"net"
+	"errors"
 	"time"
 )
 
@@ -54,6 +54,10 @@ func SetNode(nId int64, nStartTime time.Time, nTimeBits, nNodeBits, nCountBits i
 	epoch = nStartTime
 	elapsed = 0
 
+	e := time.Since(epoch).Milliseconds()
+	if e > maxTS {
+		return errors.New("max time exceeded")
+	}
 	return nil
 }
 

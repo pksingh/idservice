@@ -41,6 +41,11 @@ func main() {
 	nCountBits = 16
 	nStartTime = time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
 
+	err = snowid.SetNode(int64(nId), nStartTime, int64(nTimeBits), int64(nNodeBits), int64(nCountBits))
+	if err != nil {
+		status = StatusFAILED
+	}
+
 	http.HandleFunc("/hello", hello)
 	http.HandleFunc("/health", GetHealth)
 	http.HandleFunc("/idgen", GetIdgen)
