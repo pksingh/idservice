@@ -91,3 +91,32 @@ func TestGetIdmeta(t *testing.T) {
 	assert.NotEmpty(t, result["node_bits"])
 	assert.NotEmpty(t, result["count_bits"])
 }
+
+// func TestGetHealthHttptServer(t *testing.T) {
+// 	expected := "dummy data"
+// 	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+// 		fmt.Fprintf(w, expected)
+// 	}))
+// 	defer svr.Close()
+// 	c := NewClient(svr.URL)
+// 	res, err := c.UpperCase("anything")
+// 	if err != nil {
+// 		t.Errorf("expected err to be nil got %v", err)
+// 	}
+// 	// res: expected\r\n
+// 	// due to the http protocol cleanup response
+// 	res = strings.TrimSpace(res)
+// 	if res != expected {
+// 		t.Errorf("expected res to be %s got %s", expected, res)
+// 	}
+// }
+
+// func TestGetHealthError(t *testing.T) {
+// 	router := gin.New()
+// 	router.GET("/health", GetHealth)
+// 	w := httptest.NewRecorder()
+// 	req, _ := http.NewRequest(http.MethodGet, "/health", nil)
+// 	router.ServeHTTP(w, req)
+// 	assert.Equal(t, http.StatusOK, w.Code)
+// 	assert.Equal(t, "{\"status\":\"ok\"}", w.Body.String())
+// }
