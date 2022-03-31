@@ -4,9 +4,16 @@ package snowid
 
 import (
 	"errors"
+	"fmt"
+	"sync/atomic"
 	"time"
 )
 
+// A snow ID is max 63 bits composed of
+//
+//	tsBits - used for time : here we keep time in ms; hence 40 bits, user configurable
+//	nodeBits - used for uniq nodes [ can be combined with node with muliple pods ] : 16 bits, user configurable
+//	seqBits - used for a sequence/counter number : 13 bits, user configurable
 var (
 	epoch   time.Time // will store unix epoch timestamp
 	nodeId  int64     // will hold the current nodeid
@@ -22,6 +29,7 @@ var (
 	maxTS         int64 // 2^tsBits - 1
 )
 
+// SetNode will init nodeid, starttime, and bits used for snowid - Configure as per need
 func SetNode(nId int64, nStartTime time.Time, nTimeBits, nNodeBits, nCountBits int64) error {
 	if nNodeBits < 0 {
 		return errors.New("invalid node bits: -ve")
@@ -58,10 +66,36 @@ func SetNode(nId int64, nStartTime time.Time, nTimeBits, nNodeBits, nCountBits i
 	if e > maxTS {
 		return errors.New("max time exceeded")
 	}
+	atomic.StoreInt64(&elapsed, time.Since(epoch).Milliseconds())
 	return nil
 }
 
+// NextId returns the next unique snowid.
 func NextId() int64 {
-	return time.Now().Unix()
+	t := time.Since(epoch).Milliseconds()
+
+	// have we reach maxtime
+	if t > maxTS {
+		panic(fmt.Sprintf("max time exceeded: currenttime: %v, maxtime: %v", t, maxTS))
+		// return errors.New("max time exceeded")
+	}
+
+	// check clock rollbacks - double check
+	e := atomic.LoadInt64(&elapsed)
+	for e > t {
+		t = time.Since(epoch).Milliseconds()
+		e = atomic.LoadInt64(&elapsed)
+	}
+	// have all sequence used/generated
+	s := atomic.AddInt64(&seq, 1)
+	for s > maxSeq {
+		for t == e {
+			t = time.Since(epoch).Milliseconds()
+		}
+		atomic.StoreInt64(&seq, 0)
+		s = 0
+	}
+	atomic.StoreInt64(&elapsed, t)
+	return (t << tsBitsShift) | nodeId | s
 }
 
