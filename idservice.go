@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"time"
 
-	snowid "idservice/snowid"
+	snowid "github.com/pksingh/idservice/snowid"
 )
 
 const (
