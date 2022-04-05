@@ -70,6 +70,11 @@ func SetNode(nId int64, nStartTime time.Time, nTimeBits, nNodeBits, nCountBits i
 	return nil
 }
 
+func SetDefaultNode() {
+	nStartTime := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+	_ = SetNode(0, nStartTime, 41, 16, 13)
+}
+
 // NextId returns the next unique snowid.
 func NextId() int64 {
 	t := time.Since(epoch).Milliseconds()
