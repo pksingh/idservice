@@ -26,3 +26,12 @@ func TestNextIds(t *testing.T) {
 		t.Errorf("two snowids are generated out of order, diff(next3-next2): %v", (next3 - next2))
 	}
 }
+
+func BenchmarkSnowid(b *testing.B) {
+	SetDefaultNode()
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = NextId()
+	}
+}
