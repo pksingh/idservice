@@ -19,8 +19,8 @@ const (
 	StatusNotInit = "node not initiated"
 )
 
-var status string
-var err error
+var err = errors.New(StatusNotInit)
+var status = StatusNotInit
 
 var nStartTime time.Time
 var nId int64
@@ -32,19 +32,7 @@ func main() {
 	port := flag.Int("p", 80, "Port")
 	flag.Parse()
 
-	err = errors.New(StatusNotInit)
-	status = StatusNotInit
-
-	nId = 0
-	nTimeBits = 42
-	nNodeBits = 5
-	nCountBits = 16
-	nStartTime = time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
-
-	err = snowid.SetNode(int64(nId), nStartTime, int64(nTimeBits), int64(nNodeBits), int64(nCountBits))
-	if err != nil {
-		status = StatusFAILED
-	}
+	InitNode(0, time.Date(2022, 1, 1, 0, 0, 0, 0, time.UTC), 42, 5, 16)
 
 	http.HandleFunc("/hello", hello)
 	http.HandleFunc("/health", GetHealth)
@@ -90,4 +78,25 @@ func GetIdgen(w http.ResponseWriter, r *http.Request) {
 func GetIdmeta(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprintf(w, "{\"start_time\": \"%s\", \"node_id\": %d, \"time_bits\": %d, \"node_bits\": %d, \"count_bits\": %d}", nStartTime, nId, nTimeBits, nNodeBits, nCountBits)
+}
+
+func InitNode(nId int64, nStartTime time.Time, nTimeBits, nNodeBits, nCountBits int64) {
+
+	err = snowid.SetNode(int64(nId), nStartTime, int64(nTimeBits), int64(nNodeBits), int64(nCountBits))
+	if err != nil {
+		status = StatusFAILED
+	}
+}
+
+func InitDefaultNode() {
+	nId = 0
+	nTimeBits = 42
+	nNodeBits = 5
+	nCountBits = 16
+	nStartTime = time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+
+	err = snowid.SetNode(int64(nId), nStartTime, int64(nTimeBits), int64(nNodeBits), int64(nCountBits))
+	if err != nil {
+		status = StatusFAILED
+	}
 }
