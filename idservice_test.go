@@ -6,12 +6,12 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestGetHealthHttpt(t *testing.T) {
+	InitDefaultNode()
 	req := httptest.NewRequest(http.MethodGet, "/health", nil)
 	w := httptest.NewRecorder()
 	GetHealth(w, req)
@@ -37,6 +37,7 @@ func TestGetHealthHttpt(t *testing.T) {
 }
 
 func TestGetHealth(t *testing.T) {
+	InitDefaultNode()
 	req := httptest.NewRequest(http.MethodGet, "/health", nil)
 	w := httptest.NewRecorder()
 	GetHealth(w, req)
@@ -49,6 +50,7 @@ func TestGetHealth(t *testing.T) {
 }
 
 func TestGetIdgen(t *testing.T) {
+	InitDefaultNode()
 	req := httptest.NewRequest(http.MethodGet, "/idgen", nil)
 	w := httptest.NewRecorder()
 	GetIdgen(w, req)
@@ -63,11 +65,7 @@ func TestGetIdgen(t *testing.T) {
 }
 
 func TestGetIdmeta(t *testing.T) {
-	nId = 0
-	nTimeBits = 42
-	nNodeBits = 5
-	nCountBits = 16
-	nStartTime = time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+	InitDefaultNode()
 
 	req := httptest.NewRequest(http.MethodGet, "/idmeta", nil)
 	w := httptest.NewRecorder()
