@@ -49,6 +49,18 @@ func TestGetHealth(t *testing.T) {
 
 }
 
+func TestGetHealthError(t *testing.T) {
+	req := httptest.NewRequest(http.MethodGet, "/health", nil)
+	w := httptest.NewRecorder()
+	GetHealth(w, req)
+
+	assert.NotEmpty(t, w)
+	assert.NotEmpty(t, w.Body)
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.Equal(t, "{\"status\": \"node not initiated\"}", w.Body.String())
+
+}
+
 func TestGetIdgen(t *testing.T) {
 	InitDefaultNode()
 	req := httptest.NewRequest(http.MethodGet, "/idgen", nil)
@@ -62,6 +74,20 @@ func TestGetIdgen(t *testing.T) {
 	var result map[string]interface{}
 	json.Unmarshal(w.Body.Bytes(), &result)
 	assert.NotEmpty(t, result["uid"])
+}
+
+func TestGetIdgenError(t *testing.T) {
+	req := httptest.NewRequest(http.MethodGet, "/idgen", nil)
+	w := httptest.NewRecorder()
+	GetIdgen(w, req)
+
+	assert.NotEmpty(t, w)
+	assert.NotEmpty(t, w.Body)
+	assert.NotEqual(t, http.StatusOK, w.Code)
+	assert.NotContains(t, w.Body.String(), "uid")
+	assert.Contains(t, w.Body.String(), "error")
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.Equal(t, "{\"error\": \"node not initiated\"}", w.Body.String())
 }
 
 func TestGetIdmeta(t *testing.T) {
@@ -90,31 +116,3 @@ func TestGetIdmeta(t *testing.T) {
 	assert.NotEmpty(t, result["count_bits"])
 }
 
-// func TestGetHealthHttptServer(t *testing.T) {
-// 	expected := "dummy data"
-// 	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-// 		fmt.Fprintf(w, expected)
-// 	}))
-// 	defer svr.Close()
-// 	c := NewClient(svr.URL)
-// 	res, err := c.UpperCase("anything")
-// 	if err != nil {
-// 		t.Errorf("expected err to be nil got %v", err)
-// 	}
-// 	// res: expected\r\n
-// 	// due to the http protocol cleanup response
-// 	res = strings.TrimSpace(res)
-// 	if res != expected {
-// 		t.Errorf("expected res to be %s got %s", expected, res)
-// 	}
-// }
-
-// func TestGetHealthError(t *testing.T) {
-// 	router := gin.New()
-// 	router.GET("/health", GetHealth)
-// 	w := httptest.NewRecorder()
-// 	req, _ := http.NewRequest(http.MethodGet, "/health", nil)
-// 	router.ServeHTTP(w, req)
-// 	assert.Equal(t, http.StatusOK, w.Code)
-// 	assert.Equal(t, "{\"status\":\"ok\"}", w.Body.String())
-// }
