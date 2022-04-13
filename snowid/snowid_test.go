@@ -1,7 +1,9 @@
 package snowid
 
 import (
+	"errors"
 	"testing"
+	"time"
 )
 
 func TestNextIds(t *testing.T) {
@@ -25,6 +27,35 @@ func TestNextIds(t *testing.T) {
 	if next3 < next2 {
 		t.Errorf("two snowids are generated out of order, diff(next3-next2): %v", (next3 - next2))
 	}
+}
+
+func TestSetNode(t *testing.T) {
+	SetDefaultNode()
+
+	t.Run("invalid node id", func(t *testing.T) {
+		defer func() { _ = recover() }()
+		// interfaceAddrs = net.InterfaceAddrs
+		nStartTime := time.Time{}
+		err := SetNode(-1, nStartTime, 0, 16, 13)
+		expected := errors.New("invalid node id: -ve")
+
+		if err == nil || err.Error() != expected.Error() {
+			t.Errorf("should have thown error, expected: %v; got: %v", expected, err)
+		}
+	})
+
+	t.Run("max time exceeded", func(t *testing.T) {
+		defer func() { _ = recover() }()
+		// interfaceAddrs = net.InterfaceAddrs
+		nStartTime := time.Date(0, 1, 1, 0, 0, 0, 0, time.UTC)
+		err := SetNode(0, nStartTime, 41, 16, 13)
+		expected := errors.New("max time exceeded")
+
+		if err == nil || err.Error() != expected.Error() {
+			t.Errorf("should have thown error, expected: %v; got: %v", expected, err)
+		}
+	})
+
 }
 
 func BenchmarkSnowid(b *testing.B) {
