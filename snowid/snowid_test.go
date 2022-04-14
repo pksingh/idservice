@@ -44,6 +44,42 @@ func TestSetNode(t *testing.T) {
 		}
 	})
 
+	t.Run("invalid timestamp bits", func(t *testing.T) {
+		defer func() { _ = recover() }()
+		// interfaceAddrs = net.InterfaceAddrs
+		nStartTime := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+		err := SetNode(0, nStartTime, -1, 16, 13)
+		expected := errors.New("invalid timestamp bits: -ve")
+
+		if err == nil || err.Error() != expected.Error() {
+			t.Errorf("should have thown error, expected: %v; got: %v", expected, err)
+		}
+	})
+
+	t.Run("invalid node bits", func(t *testing.T) {
+		defer func() { _ = recover() }()
+		// interfaceAddrs = net.InterfaceAddrs
+		nStartTime := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+		err := SetNode(0, nStartTime, 41, -1, 13)
+		expected := errors.New("invalid node bits: -ve")
+
+		if err == nil || err.Error() != expected.Error() {
+			t.Errorf("should have thown error, expected: %v; got: %v", expected, err)
+		}
+	})
+
+	t.Run("invalid sequence bits", func(t *testing.T) {
+		defer func() { _ = recover() }()
+		// interfaceAddrs = net.InterfaceAddrs
+		nStartTime := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+		err := SetNode(0, nStartTime, 41, 16, -1)
+		expected := errors.New("invalid sequence bits: -ve")
+
+		if err == nil || err.Error() != expected.Error() {
+			t.Errorf("should have thown error, expected: %v; got: %v", expected, err)
+		}
+	})
+
 	t.Run("max time exceeded", func(t *testing.T) {
 		defer func() { _ = recover() }()
 		// interfaceAddrs = net.InterfaceAddrs
