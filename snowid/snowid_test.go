@@ -29,6 +29,20 @@ func TestNextIds(t *testing.T) {
 	}
 }
 
+func TestNextIdPanics(t *testing.T) {
+	t.Run("max time exceeded", func(t *testing.T) {
+		defer func() { _ = recover() }()
+
+		// SetDefaultNode()
+		// epoch = time.Now().Add(time.Duration(-1*(1<<tsBits)) * time.Millisecond)
+		nStartTime := time.Date(0, 1, 1, 0, 0, 0, 0, time.UTC)
+		_ = SetNode(0, nStartTime, 41, 16, 13)
+
+		_ = NextId()
+		t.Errorf("should have panicked")
+	})
+}
+
 func TestSetNode(t *testing.T) {
 	SetDefaultNode()
 
