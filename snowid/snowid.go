@@ -104,3 +104,26 @@ func NextId() int64 {
 	return (t << tsBitsShift) | nodeId | s
 }
 
+// SID snowid based on snowflake
+type SnowID struct {
+	Sequence  uint64
+	NodeId    uint64
+	Timestamp uint64
+	ID        uint64
+}
+
+// ParseId parse snowid it to SID struct.
+func ParseId(id uint64) SnowID {
+	time := id >> (uint64(seqBits) + uint64(nodeBits))
+	sequence := id & uint64(maxSeq)
+	maxNodes := (1 << nodeBits) - 1
+	nodeId := (id & (uint64(maxNodes) << uint64(seqBits))) >> seqBits
+
+	return SnowID{
+		ID:        id,
+		Sequence:  sequence,
+		NodeId:    nodeId,
+		Timestamp: time,
+	}
+}
+
