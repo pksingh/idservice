@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	snowid "github.com/pksingh/idservice/snowid"
@@ -38,6 +39,7 @@ func main() {
 	http.HandleFunc("/health", GetHealth)
 	http.HandleFunc("/idgen", GetIdgen)
 	http.HandleFunc("/idmeta", GetIdmeta)
+	http.HandleFunc("/parseid?uid={uid}", GetIdparsed)
 
 	// fmt.Println("Server Starting on 8080")
 	log.Println(fmt.Sprintf("idservice Running on port %v ...", *port))
@@ -78,6 +80,20 @@ func GetIdgen(w http.ResponseWriter, r *http.Request) {
 func GetIdmeta(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprintf(w, "{\"start_time\": \"%s\", \"node_id\": %d, \"time_bits\": %d, \"node_bits\": %d, \"count_bits\": %d}", nStartTime, nId, nTimeBits, nNodeBits, nCountBits)
+}
+
+func GetIdparsed(w http.ResponseWriter, r *http.Request) {
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprintf(w, "{\"error\": \"%s\"}", status)
+	} else {
+		uidStr := r.URL.Query()["uid"]
+		uid, _ := strconv.ParseUint(uidStr[0], 10, 64)
+		sid := snowid.ParseId(uid)
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprintf(w, "{\"id\": \"%d\", \"time\": %d, \"nodeId\": %d, \"sequence\": %d}", sid.ID, sid.Timestamp, sid.NodeId, sid.Sequence)
+	}
 }
 
 func InitNode(nId int64, nStartTime time.Time, nTimeBits, nNodeBits, nCountBits int64) {
