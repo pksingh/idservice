@@ -116,3 +116,29 @@ func TestGetIdmeta(t *testing.T) {
 	assert.NotEmpty(t, result["count_bits"])
 }
 
+func TestGetIdparsed(t *testing.T) {
+	InitDefaultNode()
+
+	req := httptest.NewRequest(http.MethodGet, "/parseid?uid=1995139911933509633", nil)
+	w := httptest.NewRecorder()
+	GetIdparsed(w, req)
+
+	assert.NotEmpty(t, w)
+	assert.NotEmpty(t, w.Body)
+	assert.Equal(t, http.StatusOK, w.Code)
+	strBody := w.Body.String()
+	assert.NotContains(t, strBody, "error")
+	assert.Contains(t, strBody, "time")
+	assert.Contains(t, strBody, "id")
+	assert.Contains(t, strBody, "nodeId")
+	assert.Contains(t, strBody, "sequence")
+
+	// t.Log(strBody)
+	var result map[string]interface{}
+	json.Unmarshal(w.Body.Bytes(), &result)
+	assert.NotNil(t, result["time"])
+	assert.NotEmpty(t, result["id"])
+	assert.NotNil(t, result["nodeId"])
+	assert.NotNil(t, result["sequence"])
+}
+
