@@ -108,6 +108,25 @@ func TestSetNode(t *testing.T) {
 
 }
 
+func TestParseId(t *testing.T) {
+	t.Run("parse snowid", func(t *testing.T) {
+		defer func() { _ = recover() }()
+
+		nStartTime := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+		_ = SetNode(2, nStartTime, 41, 16, 13)
+
+		uid := NextId()
+		sid := ParseId(uint64(uid))
+		//t.Log(sid)
+		if sid.NodeId != 2 {
+			t.Errorf("expected nodeid:%v, got: %v", 2, sid.NodeId)
+		}
+		if sid.Timestamp > uint64(epoch.UnixMilli()) {
+			t.Errorf("expected time:(%v) should post initiated  time:(%v)", sid.Timestamp, uint64(epoch.UnixMilli()))
+		}
+	})
+}
+
 func BenchmarkSnowid(b *testing.B) {
 	SetDefaultNode()
 	b.ReportAllocs()
