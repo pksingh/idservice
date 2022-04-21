@@ -89,7 +89,12 @@ func GetIdparsed(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "{\"error\": \"%s\"}", status)
 	} else {
 		uidStr := r.URL.Query()["uid"]
-		uid, _ := strconv.ParseUint(uidStr[0], 10, 64)
+		uid, err := strconv.ParseUint(uidStr[0], 10, 64)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, "{\"error\": \"%s\"}", err.Error())
+			return
+		}
 		sid := snowid.ParseId(uid)
 		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprintf(w, "{\"id\": \"%d\", \"time\": %d, \"nodeId\": %d, \"sequence\": %d}", sid.ID, sid.Timestamp, sid.NodeId, sid.Sequence)
