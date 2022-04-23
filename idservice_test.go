@@ -142,3 +142,19 @@ func TestGetIdparsed(t *testing.T) {
 	assert.NotNil(t, result["sequence"])
 }
 
+func TestGetIdparsedError(t *testing.T) {
+	InitDefaultNode()
+
+	req := httptest.NewRequest(http.MethodGet, "/parseid?uid=abc12345", nil)
+	w := httptest.NewRecorder()
+	GetIdparsed(w, req)
+
+	assert.NotEmpty(t, w)
+	assert.NotEmpty(t, w.Body)
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+	strBody := w.Body.String()
+	// t.Log(strBody)
+	assert.Contains(t, strBody, "error")
+	assert.Contains(t, strBody, "invalid syntax")
+}
+
