@@ -39,7 +39,7 @@ func main() {
 	http.HandleFunc("/health", GetHealth)
 	http.HandleFunc("/idgen", GetIdgen)
 	http.HandleFunc("/idmeta", GetIdmeta)
-	http.HandleFunc("/parseid?uid={uid}", GetIdparsed)
+	http.HandleFunc("/parseid", GetIdparsed)
 
 	// fmt.Println("Server Starting on 8080")
 	log.Println(fmt.Sprintf("idservice Running on port %v ...", *port))
@@ -101,9 +101,13 @@ func GetIdparsed(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func InitNode(nId int64, nStartTime time.Time, nTimeBits, nNodeBits, nCountBits int64) {
-
-	err = snowid.SetNode(int64(nId), nStartTime, int64(nTimeBits), int64(nNodeBits), int64(nCountBits))
+func InitNode(id int64, startTime time.Time, timeBits, nodeBits, countBits int64) {
+	nId = id
+	nTimeBits = int8(timeBits)
+	nNodeBits = int8(nodeBits)
+	nCountBits = int8(countBits)
+	nStartTime = startTime
+	err = snowid.SetNode(int64(id), startTime, int64(timeBits), int64(nodeBits), int64(countBits))
 	if err != nil {
 		status = StatusFAILED
 	}
